@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class Explosion : MonoBehaviour
 {
-    [SerializeField] float _explosionRadius;
-    [SerializeField] float _explosionForce;
+    public float ExplosionRadius;
+    public float ExplosionForce;
 
-    private void Explode()
+    public void Explode(float explosionForce, float explosionRadius)
     {
-        foreach (Rigidbody explodableObject in GetExplodableObject())
+        foreach (Rigidbody explodableObject in GetExplodableObject(explosionRadius))
         {
-            explodableObject.AddExplosionForce(_explosionForce, transform.position, _explosionRadius);
+            explodableObject.AddExplosionForce(explosionForce, transform.position, explosionRadius);
         }
     }
 
-    private List<Rigidbody> GetExplodableObject()
+    private List<Rigidbody> GetExplodableObject(float explosionRadius)
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, _explosionRadius);
+        Collider[] hits = Physics.OverlapSphere(transform.position, explosionRadius);
 
         List<Rigidbody> cube = new();
 

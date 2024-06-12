@@ -1,11 +1,13 @@
-using Unity.VisualScripting;
 using UnityEngine;
+
+[RequireComponent (typeof(Explosion))]
 
 public class CubeSpawner : MonoBehaviour
 {
     [SerializeField] private Vector3 _scaleCube;
-    [SerializeField] private Cube _cube;
-    [SerializeField] private Explosion _explosion;
+    [SerializeField] private Cube _cubePrefab;
+
+    private Explosion _explosion;
     private int _minAmount = 5;
     private int _maxAmount = 6;
     private float _delimiterScale = 2f;
@@ -14,6 +16,11 @@ public class CubeSpawner : MonoBehaviour
     private float _explosionForce;
     private float _explosionRadius;
     private float _forceMultiplier = 2f;
+
+    private void Awake()
+    {
+        _explosion = GetComponent<Explosion>();
+    }
 
     private void OnMouseUpAsButton()
     {
@@ -33,7 +40,8 @@ public class CubeSpawner : MonoBehaviour
 
     private void CalculateParameters()
     {
-        _splitChance = _cube.ChanceSplit /= _splitChanceDelimiter;
+        _splitChance = _cubePrefab.ChanceSplit;
+        _splitChance = _splitChance /= _splitChanceDelimiter;
         _scaleCube = transform.localScale /= _delimiterScale;
         _explosionForce = _explosion.ExplosionForce *= _forceMultiplier;
         _explosionRadius = _explosion.ExplosionRadius *= _forceMultiplier;
@@ -45,8 +53,9 @@ public class CubeSpawner : MonoBehaviour
         
         for (int i = 0; i < randomAmountCubes; i++)
         {
-            _cube.Initialize(_scaleCube, transform.position, _splitChance);
-            Instantiate(_cube, transform.position, transform.rotation);
+            Cube cube = Instantiate(_cubePrefab, transform.position, transform.rotation);
+            cube.Initialize(_scaleCube, transform.position, Random.ColorHSV(), _splitChance);
+            _explosion.Explode(_explosionForce, _explosionRadius);
         }
     }
 }

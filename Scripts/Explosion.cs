@@ -3,31 +3,31 @@ using UnityEngine;
 
 public class Explosion : MonoBehaviour
 {
-    public float ExplosionRadius;
-    public float ExplosionForce;
+    private float _explosionRadius = 5f;
+    private float _explosionForce = 1000f;
 
-    public void Explode(float explosionForce, float explosionRadius)
+    public void Explode(Cube cube)
     {
-        foreach (Rigidbody explodableObject in GetExplodableObject(explosionRadius))
+        Vector3 explosionPosition = cube.transform.position;
+        float explosionRadius = CalculateRadius(cube);
+        float explosionForce = CalculateForce(cube);
+
+        Collider[] colliders = Physics.OverlapSphere(transform.position, _explosionRadius);
+
+        foreach (Collider collider in colliders)
         {
-            explodableObject.AddExplosionForce(explosionForce, transform.position, explosionRadius);
+            if(collider.TryGetComponent(out Rigidbody rigidbody))
+                rigidbody.AddExplosionForce(explosionForce, cube.transform.position, explosionRadius);
         }
     }
 
-    private List<Rigidbody> GetExplodableObject(float explosionRadius)
+    public float CalculateForce(Cube cube)
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, explosionRadius);
+        return _explosionForce / cube.transform.localScale.magnitude;
+    }
 
-        List<Rigidbody> cube = new();
-
-        foreach (Collider hit in hits)
-        {
-            if (hit.attachedRigidbody != null)
-            {
-                cube.Add(hit.attachedRigidbody);
-            }
-        }
-
-        return cube;
+    public float CalculateRadius(Cube cube)
+    {
+        return _explosionRadius * cube.transform.localScale.magnitude;
     }
 }

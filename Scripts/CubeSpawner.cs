@@ -13,9 +13,6 @@ public class CubeSpawner : MonoBehaviour
     private float _delimiterScale = 2f;
     private float _splitChanceDelimiter = 2f;
     private float _splitChance = 1f;
-    private float _explosionForce;
-    private float _explosionRadius;
-    private float _forceMultiplier = 2f;
 
     private void Awake()
     {
@@ -32,7 +29,7 @@ public class CubeSpawner : MonoBehaviour
         }
         else
         {
-            _explosion.Explode(_explosionForce, _explosionRadius);
+            _explosion.Explode(_cubePrefab);
         }
 
         Destroy(gameObject);
@@ -43,8 +40,6 @@ public class CubeSpawner : MonoBehaviour
         _splitChance = _cubePrefab.ChanceSplit;
         _splitChance = _splitChance /= _splitChanceDelimiter;
         _scaleCube = transform.localScale /= _delimiterScale;
-        _explosionForce = _explosion.ExplosionForce *= _forceMultiplier;
-        _explosionRadius = _explosion.ExplosionRadius *= _forceMultiplier;
     }
 
     private void SpawnCubes()
@@ -55,7 +50,6 @@ public class CubeSpawner : MonoBehaviour
         {
             Cube cube = Instantiate(_cubePrefab, transform.position, transform.rotation);
             cube.Initialize(_scaleCube, transform.position, Random.ColorHSV(), _splitChance);
-            _explosion.Explode(_explosionForce, _explosionRadius);
         }
     }
 }
